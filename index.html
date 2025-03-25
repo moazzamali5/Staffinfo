@@ -148,6 +148,42 @@
             </div>
 
             <div class="form-group">
+                <label for="jobTitle">Job Title</label>
+                <input type="text" id="jobTitle" name="jobTitle" required>
+            </div>
+
+            <div class="form-group">
+                <label for="schoolName">School Name</label>
+                <input type="text" id="schoolName" name="schoolName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="emergencyContact">Emergency Contact</label>
+                <input type="tel" id="emergencyContact" name="emergencyContact" required>
+            </div>
+
+            <div class="form-group">
+                <label>Do you have any disability?</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="hasDisability" value="yes" required>
+                        <span class="radio-custom"></span>
+                        <span class="radio-text">Yes</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="hasDisability" value="no" required>
+                        <span class="radio-custom"></span>
+                        <span class="radio-text">No</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group" id="disabilityDetailsContainer" style="display: none;">
+                <label for="disabilityDetails">Please explain your disability:</label>
+                <textarea id="disabilityDetails" name="disabilityDetails" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
                 <label for="siblingsCount">Number of Siblings</label>
                 <input type="number" id="siblingsCount" name="siblingsCount" min="0" required>
             </div>
@@ -160,11 +196,6 @@
                 <div class="form-group">
                     <label for="icPassport">IC/Passport Number</label>
                     <input type="text" id="icPassport" name="icPassport" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="jobTitle">Job Title</label>
-                    <input type="text" id="jobTitle" name="jobTitle" required>
                 </div>
             </div>
 
@@ -184,7 +215,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="submit-btn" disabled>Submit</button>
+            <button type="submit" class="submit-btn">Submit</button>
         </form>
     </div>
 
