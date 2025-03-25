@@ -31,6 +31,8 @@ const mainContent = document.querySelector('.main-content');
 const successMessage = document.getElementById('successMessage');
 const closeSuccessBtn = document.querySelector('.close-success');
 const searchInput = document.getElementById('searchInput');
+const siblingsCount = document.getElementById('siblingsCount');
+const siblingsContainer = document.getElementById('siblingsContainer');
 
 // Admin password (in a real application, this should be handled server-side)
 const ADMIN_PASSWORD = "bananacheese";
@@ -90,18 +92,136 @@ responsesBtn.addEventListener('click', (e) => {
     adminModal.style.display = 'flex';
 });
 
-// Form submission
+// Siblings functionality
+siblingsCount.addEventListener('change', () => {
+    const count = parseInt(siblingsCount.value) || 0;
+    siblingsContainer.innerHTML = '';
+    
+    for (let i = 0; i < count; i++) {
+        const siblingDiv = document.createElement('div');
+        siblingDiv.className = 'sibling-group';
+        siblingDiv.innerHTML = `
+            <h4>Sibling ${i + 1}</h4>
+            <div class="form-group">
+                <label for="siblingName${i}">Name</label>
+                <input type="text" id="siblingName${i}" name="siblingName${i}" required>
+            </div>
+            <div class="form-group">
+                <label for="siblingContact${i}">Contact</label>
+                <input type="tel" id="siblingContact${i}" name="siblingContact${i}" required>
+            </div>
+        `;
+        siblingsContainer.appendChild(siblingDiv);
+    }
+});
+
+// Form validation
+function validateForm() {
+    const submitBtn = document.querySelector('.submit-btn');
+    const requiredFields = staffForm.querySelectorAll('[required]');
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            isValid = false;
+        }
+    });
+
+    // Check if all sibling fields are filled if siblings count > 0
+    const count = parseInt(siblingsCount.value) || 0;
+    if (count > 0) {
+        for (let i = 0; i < count; i++) {
+            const name = document.getElementById(`siblingName${i}`).value.trim();
+            const contact = document.getElementById(`siblingContact${i}`).value.trim();
+            if (!name || !contact) {
+                isValid = false;
+                break;
+            }
+        }
+    }
+
+    submitBtn.disabled = !isValid;
+}
+
+// Add validation listeners
+staffForm.addEventListener('input', validateForm);
+staffForm.addEventListener('change', validateForm);
+
+// Handle race selection
+function handleRaceChange() {
+    const raceSelect = document.getElementById('race');
+    const otherRaceContainer = document.getElementById('otherRaceContainer');
+    const otherRaceInput = document.getElementById('otherRace');
+    
+    if (raceSelect.value === 'Other') {
+        otherRaceContainer.style.display = 'block';
+        otherRaceInput.required = true;
+    } else {
+        otherRaceContainer.style.display = 'none';
+        otherRaceInput.required = false;
+        otherRaceInput.value = ''; // Clear the input when hidden
+    }
+}
+
+// Handle religion selection
+function handleReligionChange() {
+    const religionSelect = document.getElementById('religion');
+    const otherReligionContainer = document.getElementById('otherReligionContainer');
+    const otherReligionInput = document.getElementById('otherReligion');
+    
+    if (religionSelect.value === 'Other') {
+        otherReligionContainer.style.display = 'block';
+        otherReligionInput.required = true;
+    } else {
+        otherReligionContainer.style.display = 'none';
+        otherReligionInput.required = false;
+        otherReligionInput.value = ''; // Clear the input when hidden
+    }
+}
+
+// Update form submission
 staffForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    const siblings = [];
+    const count = parseInt(siblingsCount.value) || 0;
+    
+    for (let i = 0; i < count; i++) {
+        siblings.push({
+            name: document.getElementById(`siblingName${i}`).value,
+            contact: document.getElementById(`siblingContact${i}`).value
+        });
+    }
+
+    // Handle race value
+    const raceSelect = document.getElementById('race');
+    const raceValue = raceSelect.value === 'Other' 
+        ? document.getElementById('otherRace').value 
+        : raceSelect.value;
+
+    // Handle religion value
+    const religionSelect = document.getElementById('religion');
+    const religionValue = religionSelect.value === 'Other' 
+        ? document.getElementById('otherReligion').value 
+        : religionSelect.value;
+
     const formData = {
         firstName: document.getElementById('firstName').value,
         lastName: document.getElementById('lastName').value,
         bloodGroup: document.getElementById('bloodGroup').value,
         birthDate: document.getElementById('birthDate').value,
+        birthTime: document.getElementById('birthTime').value,
         phoneNumber: document.getElementById('phoneNumber').value,
         fatherName: document.getElementById('fatherName').value,
         fatherPhone: document.getElementById('fatherPhone').value,
+        motherName: document.getElementById('motherName').value,
+        motherPhone: document.getElementById('motherPhone').value,
+        currentAddress: document.getElementById('currentAddress').value,
+        parentAddress: document.getElementById('parentAddress').value,
+        race: raceValue,
+        religion: religionValue,
+        email: document.getElementById('email').value,
+        siblings: siblings,
         icPassport: document.getElementById('icPassport').value,
         jobTitle: document.getElementById('jobTitle').value,
         submissionDate: new Date().toISOString()
@@ -112,6 +232,10 @@ staffForm.addEventListener('submit', async (e) => {
         await push(staffRef, formData);
         showSuccessMessage();
         staffForm.reset();
+        siblingsContainer.innerHTML = '';
+        handleRaceChange();
+        handleReligionChange();
+        validateForm();
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('Error submitting form. Please try again.');
@@ -138,13 +262,35 @@ function displayResponses(data) {
             if (value.firstName.toLowerCase().includes(searchTerm)) {
                 const responseCard = document.createElement('div');
                 responseCard.className = 'response-card';
+                
+                let siblingsHtml = '';
+                if (value.siblings && value.siblings.length > 0) {
+                    siblingsHtml = `
+                        <p><strong>Siblings:</strong></p>
+                        <ul>
+                            ${value.siblings.map(sibling => `
+                                <li>${sibling.name} (${sibling.contact})</li>
+                            `).join('')}
+                        </ul>
+                    `;
+                }
+
                 responseCard.innerHTML = `
                     <h3>${value.firstName} ${value.lastName}</h3>
                     <p><strong>Blood Group:</strong> ${value.bloodGroup}</p>
                     <p><strong>Birth Date:</strong> ${new Date(value.birthDate).toLocaleDateString()}</p>
+                    <p><strong>Birth Time:</strong> ${value.birthTime || '00:00'}</p>
                     <p><strong>Phone Number:</strong> ${value.phoneNumber}</p>
+                    <p><strong>Email:</strong> ${value.email}</p>
+                    <p><strong>Current Address:</strong> ${value.currentAddress}</p>
+                    <p><strong>Parent's Address:</strong> ${value.parentAddress || 'Same as current address'}</p>
+                    <p><strong>Race:</strong> ${value.race}</p>
+                    <p><strong>Religion:</strong> ${value.religion}</p>
                     <p><strong>Father's Name:</strong> ${value.fatherName}</p>
                     <p><strong>Father's Phone:</strong> ${value.fatherPhone}</p>
+                    <p><strong>Mother's Name:</strong> ${value.motherName}</p>
+                    <p><strong>Mother's Phone:</strong> ${value.motherPhone}</p>
+                    ${siblingsHtml}
                     <p><strong>IC/Passport:</strong> ${value.icPassport}</p>
                     <p><strong>Job Title:</strong> ${value.jobTitle}</p>
                     <p><strong>Submitted:</strong> ${new Date(value.submissionDate).toLocaleString()}</p>
