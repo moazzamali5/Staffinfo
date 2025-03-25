@@ -33,6 +33,8 @@ const closeSuccessBtn = document.querySelector('.close-success');
 const searchInput = document.getElementById('searchInput');
 const siblingsCount = document.getElementById('siblingsCount');
 const siblingsContainer = document.getElementById('siblingsContainer');
+const disabilityDetailsContainer = document.getElementById('disabilityDetailsContainer');
+const hasDisabilityRadios = document.getElementsByName('hasDisability');
 
 // Admin password (in a real application, this should be handled server-side)
 const ADMIN_PASSWORD = "bananacheese";
@@ -122,35 +124,15 @@ siblingsCount.addEventListener('change', () => {
 // Form validation
 function validateForm() {
     const submitBtn = document.querySelector('.submit-btn');
-    const requiredFields = staffForm.querySelectorAll('[required]');
-    let isValid = true;
-
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            isValid = false;
-        }
-    });
-
-    // Check if all sibling fields are filled if siblings count > 0
-    const count = parseInt(siblingsCount.value) || 0;
-    if (count > 0) {
-        for (let i = 0; i < count; i++) {
-            const name = document.getElementById(`siblingName${i}`).value.trim();
-            const contact = document.getElementById(`siblingContact${i}`).value.trim();
-            const icPassport = document.getElementById(`siblingIcPassport${i}`).value.trim();
-            if (!name || !contact || !icPassport) {
-                isValid = false;
-                break;
-            }
-        }
-    }
-
-    submitBtn.disabled = !isValid;
+    // Keep submit button always enabled
+    submitBtn.disabled = false;
 }
 
 // Add validation listeners
-staffForm.addEventListener('input', validateForm);
 staffForm.addEventListener('change', validateForm);
+
+// Initialize form validation on page load
+document.addEventListener('DOMContentLoaded', validateForm);
 
 // Handle race selection
 function handleRaceChange() {
@@ -184,6 +166,20 @@ function handleReligionChange() {
     }
 }
 
+// Handle disability radio buttons
+hasDisabilityRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+        if (radio.value === 'yes') {
+            disabilityDetailsContainer.style.display = 'block';
+            document.getElementById('disabilityDetails').required = true;
+        } else {
+            disabilityDetailsContainer.style.display = 'none';
+            document.getElementById('disabilityDetails').required = false;
+            document.getElementById('disabilityDetails').value = '';
+        }
+    });
+});
+
 // Update form submission
 staffForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -211,6 +207,13 @@ staffForm.addEventListener('submit', async (e) => {
         ? document.getElementById('otherReligion').value 
         : religionSelect.value;
 
+    // Handle disability value
+    const hasDisability = document.querySelector('input[name="hasDisability"]:checked');
+    const disabilityValue = hasDisability ? hasDisability.value : 'no';
+    const disabilityDetails = disabilityValue === 'yes' 
+        ? document.getElementById('disabilityDetails').value 
+        : '';
+
     const formData = {
         firstName: document.getElementById('firstName').value,
         lastName: document.getElementById('lastName').value,
@@ -230,6 +233,10 @@ staffForm.addEventListener('submit', async (e) => {
         siblings: siblings,
         icPassport: document.getElementById('icPassport').value,
         jobTitle: document.getElementById('jobTitle').value,
+        schoolName: document.getElementById('schoolName').value,
+        emergencyContact: document.getElementById('emergencyContact').value,
+        hasDisability: disabilityValue,
+        disabilityDetails: disabilityDetails,
         submissionDate: new Date().toISOString()
     };
 
@@ -299,6 +306,9 @@ function displayResponses(data) {
                     ${siblingsHtml}
                     <p><strong>IC/Passport:</strong> ${value.icPassport}</p>
                     <p><strong>Job Title:</strong> ${value.jobTitle}</p>
+                    <p><strong>School Name:</strong> ${value.schoolName}</p>
+                    <p><strong>Emergency Contact:</strong> ${value.emergencyContact}</p>
+                    <p><strong>Disability:</strong> ${value.hasDisability === 'yes' ? 'Yes - ' + value.disabilityDetails : 'No'}</p>
                     <p><strong>Submitted:</strong> ${new Date(value.submissionDate).toLocaleString()}</p>
                 `;
                 responsesList.appendChild(responseCard);
