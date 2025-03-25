@@ -110,6 +110,10 @@ siblingsCount.addEventListener('change', () => {
                 <label for="siblingContact${i}">Contact</label>
                 <input type="tel" id="siblingContact${i}" name="siblingContact${i}" required>
             </div>
+            <div class="form-group">
+                <label for="siblingIcPassport${i}">IC/Passport Number</label>
+                <input type="text" id="siblingIcPassport${i}" name="siblingIcPassport${i}" required>
+            </div>
         `;
         siblingsContainer.appendChild(siblingDiv);
     }
@@ -133,7 +137,8 @@ function validateForm() {
         for (let i = 0; i < count; i++) {
             const name = document.getElementById(`siblingName${i}`).value.trim();
             const contact = document.getElementById(`siblingContact${i}`).value.trim();
-            if (!name || !contact) {
+            const icPassport = document.getElementById(`siblingIcPassport${i}`).value.trim();
+            if (!name || !contact || !icPassport) {
                 isValid = false;
                 break;
             }
@@ -189,7 +194,8 @@ staffForm.addEventListener('submit', async (e) => {
     for (let i = 0; i < count; i++) {
         siblings.push({
             name: document.getElementById(`siblingName${i}`).value,
-            contact: document.getElementById(`siblingContact${i}`).value
+            contact: document.getElementById(`siblingContact${i}`).value,
+            icPassport: document.getElementById(`siblingIcPassport${i}`).value
         });
     }
 
@@ -269,7 +275,7 @@ function displayResponses(data) {
                         <p><strong>Siblings:</strong></p>
                         <ul>
                             ${value.siblings.map(sibling => `
-                                <li>${sibling.name} (${sibling.contact})</li>
+                                <li>${sibling.name} (${sibling.contact}) - IC/Passport: ${sibling.icPassport}</li>
                             `).join('')}
                         </ul>
                     `;
