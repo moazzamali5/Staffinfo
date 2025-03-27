@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HICAA Staff Information</title>
+    <title>HICCA Staff Information</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -14,7 +14,6 @@
     
     <div class="sidebar">
         <div class="sidebar-header">
-            <h2>HICAA</h2>
         </div>
         <nav>
             <ul>
@@ -26,7 +25,6 @@
 
     <div class="main-content">
         <header>
-            <h1>HICAA</h1>
             <h2>Staff Information</h2>
         </header>
 
@@ -84,6 +82,7 @@
                 <div class="form-group">
                     <label for="fatherPhone">Father's Phone Number</label>
                     <input type="tel" id="fatherPhone" name="fatherPhone" required>
+                    <small class="emergency-note">Contact information in case for any emergency purposes</small>
                 </div>
             </div>
 
@@ -96,6 +95,41 @@
                 <div class="form-group">
                     <label for="motherPhone">Mother's Phone Number</label>
                     <input type="tel" id="motherPhone" name="motherPhone" required>
+                    <small class="emergency-note">Contact information in case for any emergency purposes</small>
+                </div>
+            </div>
+
+            <!-- Marital Status Section -->
+            <div class="form-group">
+                <label>Marital Status</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="maritalStatus" value="single" checked>
+                        <span class="radio-custom"></span>
+                        <span class="radio-text">Single</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="maritalStatus" value="married">
+                        <span class="radio-custom"></span>
+                        <span class="radio-text">Married</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Partner Information Section -->
+            <div id="partnerInfoContainer" style="display: none;">
+                <h3>Partner Information</h3>
+                <div class="form-group">
+                    <label for="partnerName">Partner's Name</label>
+                    <input type="text" id="partnerName" name="partnerName">
+                </div>
+                <div class="form-group">
+                    <label for="partnerContact">Partner's Contact</label>
+                    <input type="tel" id="partnerContact" name="partnerContact">
+                </div>
+                <div class="form-group">
+                    <label for="partnerIcPassport">Partner's IC/Passport Number</label>
+                    <input type="text" id="partnerIcPassport" name="partnerIcPassport">
                 </div>
             </div>
 
