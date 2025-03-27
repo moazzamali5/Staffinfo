@@ -725,4 +725,38 @@ form {
 /* Update form group spacing for radio buttons */
 .form-group:has(.radio-group) {
     margin-bottom: 20px;
+}
+
+/* Emergency Note Styles */
+.emergency-note {
+    display: block;
+    font-size: 12px;
+    color: var(--secondary-color);
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Partner Information Styles */
+#partnerInfoContainer {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 25px;
+    border-radius: 15px;
+    margin: 20px 0;
+    border: 1px solid var(--golden-shade);
+}
+
+#partnerInfoContainer h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#partnerInfoContainer .form-group {
+    margin-bottom: 20px;
+}
+
+#partnerInfoContainer .form-group:last-child {
+    margin-bottom: 0;
 } 
