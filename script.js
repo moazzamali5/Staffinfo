@@ -37,6 +37,10 @@ const disabilityDetailsContainer = document.getElementById('disabilityDetailsCon
 const hasDisabilityRadios = document.getElementsByName('hasDisability');
 const maritalStatusRadios = document.getElementsByName('maritalStatus');
 const partnerInfoContainer = document.getElementById('partnerInfoContainer');
+const passportPhoto = document.getElementById('passportPhoto');
+const selfiePhoto = document.getElementById('selfiePhoto');
+const passportFileName = document.getElementById('passportFileName');
+const selfieFileName = document.getElementById('selfieFileName');
 
 // Admin password (in a real application, this should be handled server-side)
 const ADMIN_PASSWORD = "bananacheese";
@@ -202,6 +206,25 @@ maritalStatusRadios.forEach(radio => {
     });
 });
 
+// Handle file uploads
+passportPhoto.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        passportFileName.textContent = file.name;
+    } else {
+        passportFileName.textContent = 'No file chosen';
+    }
+});
+
+selfiePhoto.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        selfieFileName.textContent = file.name;
+    } else {
+        selfieFileName.textContent = 'No file chosen';
+    }
+});
+
 // Update form submission
 staffForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -244,33 +267,39 @@ staffForm.addEventListener('submit', async (e) => {
         icPassport: document.getElementById('partnerIcPassport').value
     } : null;
 
-    const formData = {
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        bloodGroup: document.getElementById('bloodGroup').value,
-        birthDate: document.getElementById('birthDate').value,
-        birthTime: document.getElementById('birthTime').value,
-        phoneNumber: document.getElementById('phoneNumber').value,
-        fatherName: document.getElementById('fatherName').value,
-        fatherPhone: document.getElementById('fatherPhone').value,
-        motherName: document.getElementById('motherName').value,
-        motherPhone: document.getElementById('motherPhone').value,
-        currentAddress: document.getElementById('currentAddress').value,
-        parentAddress: document.getElementById('parentAddress').value,
-        race: raceValue,
-        religion: religionValue,
-        email: document.getElementById('email').value,
-        siblings: siblings,
-        icPassport: document.getElementById('icPassport').value,
-        jobTitle: document.getElementById('jobTitle').value,
-        schoolName: document.getElementById('schoolName').value,
-        emergencyContact: document.getElementById('emergencyContact').value,
-        hasDisability: disabilityValue,
-        disabilityDetails: disabilityDetails,
-        maritalStatus: maritalStatus,
-        partnerInfo: partnerInfo,
-        submissionDate: new Date().toISOString()
-    };
+    // Handle file uploads
+    const passportFile = passportPhoto.files[0];
+    const selfieFile = selfiePhoto.files[0];
+
+    // Create FormData object
+    const formData = new FormData();
+    formData.append('firstName', document.getElementById('firstName').value);
+    formData.append('lastName', document.getElementById('lastName').value);
+    formData.append('bloodGroup', document.getElementById('bloodGroup').value);
+    formData.append('birthDate', document.getElementById('birthDate').value);
+    formData.append('birthTime', document.getElementById('birthTime').value);
+    formData.append('phoneNumber', document.getElementById('phoneNumber').value);
+    formData.append('fatherName', document.getElementById('fatherName').value);
+    formData.append('fatherPhone', document.getElementById('fatherPhone').value);
+    formData.append('motherName', document.getElementById('motherName').value);
+    formData.append('motherPhone', document.getElementById('motherPhone').value);
+    formData.append('currentAddress', document.getElementById('currentAddress').value);
+    formData.append('parentAddress', document.getElementById('parentAddress').value);
+    formData.append('race', raceValue);
+    formData.append('religion', religionValue);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('siblings', JSON.stringify(siblings));
+    formData.append('icPassport', document.getElementById('icPassport').value);
+    formData.append('jobTitle', document.getElementById('jobTitle').value);
+    formData.append('schoolName', document.getElementById('schoolName').value);
+    formData.append('emergencyContact', document.getElementById('emergencyContact').value);
+    formData.append('hasDisability', disabilityValue);
+    formData.append('disabilityDetails', disabilityDetails);
+    formData.append('maritalStatus', maritalStatus);
+    formData.append('partnerInfo', JSON.stringify(partnerInfo));
+    formData.append('submissionDate', new Date().toISOString());
+    formData.append('passportPhoto', passportFile);
+    formData.append('selfiePhoto', selfieFile);
 
     try {
         const staffRef = ref(database, 'staff');
@@ -279,6 +308,8 @@ staffForm.addEventListener('submit', async (e) => {
         staffForm.reset();
         siblingsContainer.innerHTML = '';
         partnerInfoContainer.style.display = 'none';
+        passportFileName.textContent = 'No file chosen';
+        selfieFileName.textContent = 'No file chosen';
         handleRaceChange();
         handleReligionChange();
         validateForm();
@@ -331,6 +362,26 @@ function displayResponses(data) {
                     `;
                 }
 
+                let photosHtml = '';
+                if (value.passportPhoto || value.selfiePhoto) {
+                    photosHtml = `
+                        <div class="response-photos">
+                            ${value.passportPhoto ? `
+                                <div class="photo-container">
+                                    <p><strong>Passport/IC Photo:</strong></p>
+                                    <img src="${value.passportPhoto}" alt="Passport/IC Photo" class="response-photo">
+                                </div>
+                            ` : ''}
+                            ${value.selfiePhoto ? `
+                                <div class="photo-container">
+                                    <p><strong>Selfie Photo:</strong></p>
+                                    <img src="${value.selfiePhoto}" alt="Selfie Photo" class="response-photo">
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
                 responseCard.innerHTML = `
                     <h3>${value.firstName} ${value.lastName}</h3>
                     <p><strong>Blood Group:</strong> ${value.bloodGroup}</p>
@@ -349,6 +400,7 @@ function displayResponses(data) {
                     ${siblingsHtml}
                     ${partnerHtml}
                     <p><strong>IC/Passport:</strong> ${value.icPassport}</p>
+                    ${photosHtml}
                     <p><strong>Job Title:</strong> ${value.jobTitle}</p>
                     <p><strong>School Name:</strong> ${value.schoolName}</p>
                     <p><strong>Emergency Contact:</strong> ${value.emergencyContact}</p>
