@@ -35,6 +35,8 @@ const siblingsCount = document.getElementById('siblingsCount');
 const siblingsContainer = document.getElementById('siblingsContainer');
 const disabilityDetailsContainer = document.getElementById('disabilityDetailsContainer');
 const hasDisabilityRadios = document.getElementsByName('hasDisability');
+const maritalStatusRadios = document.getElementsByName('maritalStatus');
+const partnerInfoContainer = document.getElementById('partnerInfoContainer');
 
 // Admin password (in a real application, this should be handled server-side)
 const ADMIN_PASSWORD = "bananacheese";
@@ -180,6 +182,26 @@ hasDisabilityRadios.forEach(radio => {
     });
 });
 
+// Handle marital status radio buttons
+maritalStatusRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+        if (radio.value === 'married') {
+            partnerInfoContainer.style.display = 'block';
+            document.getElementById('partnerName').required = true;
+            document.getElementById('partnerContact').required = true;
+            document.getElementById('partnerIcPassport').required = true;
+        } else {
+            partnerInfoContainer.style.display = 'none';
+            document.getElementById('partnerName').required = false;
+            document.getElementById('partnerContact').required = false;
+            document.getElementById('partnerIcPassport').required = false;
+            document.getElementById('partnerName').value = '';
+            document.getElementById('partnerContact').value = '';
+            document.getElementById('partnerIcPassport').value = '';
+        }
+    });
+});
+
 // Update form submission
 staffForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -214,6 +236,14 @@ staffForm.addEventListener('submit', async (e) => {
         ? document.getElementById('disabilityDetails').value 
         : '';
 
+    // Handle marital status and partner information
+    const maritalStatus = document.querySelector('input[name="maritalStatus"]:checked').value;
+    const partnerInfo = maritalStatus === 'married' ? {
+        name: document.getElementById('partnerName').value,
+        contact: document.getElementById('partnerContact').value,
+        icPassport: document.getElementById('partnerIcPassport').value
+    } : null;
+
     const formData = {
         firstName: document.getElementById('firstName').value,
         lastName: document.getElementById('lastName').value,
@@ -237,6 +267,8 @@ staffForm.addEventListener('submit', async (e) => {
         emergencyContact: document.getElementById('emergencyContact').value,
         hasDisability: disabilityValue,
         disabilityDetails: disabilityDetails,
+        maritalStatus: maritalStatus,
+        partnerInfo: partnerInfo,
         submissionDate: new Date().toISOString()
     };
 
@@ -246,6 +278,7 @@ staffForm.addEventListener('submit', async (e) => {
         showSuccessMessage();
         staffForm.reset();
         siblingsContainer.innerHTML = '';
+        partnerInfoContainer.style.display = 'none';
         handleRaceChange();
         handleReligionChange();
         validateForm();
@@ -288,6 +321,16 @@ function displayResponses(data) {
                     `;
                 }
 
+                let partnerHtml = '';
+                if (value.maritalStatus === 'married' && value.partnerInfo) {
+                    partnerHtml = `
+                        <p><strong>Partner Information:</strong></p>
+                        <p>Name: ${value.partnerInfo.name}</p>
+                        <p>Contact: ${value.partnerInfo.contact}</p>
+                        <p>IC/Passport: ${value.partnerInfo.icPassport}</p>
+                    `;
+                }
+
                 responseCard.innerHTML = `
                     <h3>${value.firstName} ${value.lastName}</h3>
                     <p><strong>Blood Group:</strong> ${value.bloodGroup}</p>
@@ -304,6 +347,7 @@ function displayResponses(data) {
                     <p><strong>Mother's Name:</strong> ${value.motherName}</p>
                     <p><strong>Mother's Phone:</strong> ${value.motherPhone}</p>
                     ${siblingsHtml}
+                    ${partnerHtml}
                     <p><strong>IC/Passport:</strong> ${value.icPassport}</p>
                     <p><strong>Job Title:</strong> ${value.jobTitle}</p>
                     <p><strong>School Name:</strong> ${value.schoolName}</p>
