@@ -233,6 +233,38 @@
                 </div>
             </div>
 
+            <!-- Document Upload Section -->
+            <div class="upload-section">
+                <h3>Document Upload</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="passportPhoto">Passport/IC Photo</label>
+                        <div class="file-upload-container">
+                            <input type="file" id="passportPhoto" name="passportPhoto" accept="image/*" required>
+                            <label for="passportPhoto" class="file-upload-label">
+                                <i class="fas fa-upload"></i>
+                                <span>Choose File</span>
+                            </label>
+                            <span class="file-name" id="passportFileName">No file chosen</span>
+                        </div>
+                        <small class="upload-note">Please upload a clear photo of your passport or IC</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="selfiePhoto">Selfie Photo</label>
+                        <div class="file-upload-container">
+                            <input type="file" id="selfiePhoto" name="selfiePhoto" accept="image/*" required>
+                            <label for="selfiePhoto" class="file-upload-label">
+                                <i class="fas fa-camera"></i>
+                                <span>Choose File</span>
+                            </label>
+                            <span class="file-name" id="selfieFileName">No file chosen</span>
+                        </div>
+                        <small class="upload-note">Please upload a clear selfie photo</small>
+                    </div>
+                </div>
+            </div>
+
             <div class="consent-section">
                 <div class="consent-text">
                     <p>The company collects and processes your personal data for the purposes of employment administration, payroll, benefits, internal communications and emergency contact information. The data collected may include, but is not limited to, your name, address, contact information, date of birth, employment history, and other relevant information.</p>
