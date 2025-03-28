@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-database.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-storage.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -15,6 +16,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const storage = getStorage(app);
 
 // DOM Elements
 const staffForm = document.getElementById('staffForm');
@@ -229,82 +231,140 @@ selfiePhoto.addEventListener('change', (e) => {
 staffForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const siblings = [];
-    const count = parseInt(siblingsCount.value) || 0;
-    
-    for (let i = 0; i < count; i++) {
-        siblings.push({
-            name: document.getElementById(`siblingName${i}`).value,
-            contact: document.getElementById(`siblingContact${i}`).value,
-            icPassport: document.getElementById(`siblingIcPassport${i}`).value
-        });
-    }
-
-    // Handle race value
-    const raceSelect = document.getElementById('race');
-    const raceValue = raceSelect.value === 'Other' 
-        ? document.getElementById('otherRace').value 
-        : raceSelect.value;
-
-    // Handle religion value
-    const religionSelect = document.getElementById('religion');
-    const religionValue = religionSelect.value === 'Other' 
-        ? document.getElementById('otherReligion').value 
-        : religionSelect.value;
-
-    // Handle disability value
-    const hasDisability = document.querySelector('input[name="hasDisability"]:checked');
-    const disabilityValue = hasDisability ? hasDisability.value : 'no';
-    const disabilityDetails = disabilityValue === 'yes' 
-        ? document.getElementById('disabilityDetails').value 
-        : '';
-
-    // Handle marital status and partner information
-    const maritalStatus = document.querySelector('input[name="maritalStatus"]:checked').value;
-    const partnerInfo = maritalStatus === 'married' ? {
-        name: document.getElementById('partnerName').value,
-        contact: document.getElementById('partnerContact').value,
-        icPassport: document.getElementById('partnerIcPassport').value
-    } : null;
-
-    // Handle file uploads
-    const passportFile = passportPhoto.files[0];
-    const selfieFile = selfiePhoto.files[0];
-
-    // Create FormData object
-    const formData = new FormData();
-    formData.append('firstName', document.getElementById('firstName').value);
-    formData.append('lastName', document.getElementById('lastName').value);
-    formData.append('bloodGroup', document.getElementById('bloodGroup').value);
-    formData.append('birthDate', document.getElementById('birthDate').value);
-    formData.append('birthTime', document.getElementById('birthTime').value);
-    formData.append('phoneNumber', document.getElementById('phoneNumber').value);
-    formData.append('fatherName', document.getElementById('fatherName').value);
-    formData.append('fatherPhone', document.getElementById('fatherPhone').value);
-    formData.append('motherName', document.getElementById('motherName').value);
-    formData.append('motherPhone', document.getElementById('motherPhone').value);
-    formData.append('currentAddress', document.getElementById('currentAddress').value);
-    formData.append('parentAddress', document.getElementById('parentAddress').value);
-    formData.append('race', raceValue);
-    formData.append('religion', religionValue);
-    formData.append('email', document.getElementById('email').value);
-    formData.append('siblings', JSON.stringify(siblings));
-    formData.append('icPassport', document.getElementById('icPassport').value);
-    formData.append('jobTitle', document.getElementById('jobTitle').value);
-    formData.append('schoolName', document.getElementById('schoolName').value);
-    formData.append('emergencyContact', document.getElementById('emergencyContact').value);
-    formData.append('hasDisability', disabilityValue);
-    formData.append('disabilityDetails', disabilityDetails);
-    formData.append('maritalStatus', maritalStatus);
-    formData.append('partnerInfo', JSON.stringify(partnerInfo));
-    formData.append('submissionDate', new Date().toISOString());
-    formData.append('passportPhoto', passportFile);
-    formData.append('selfiePhoto', selfieFile);
-
     try {
+        // Show loading state
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        // Validate required fields
+        const requiredFields = staffForm.querySelectorAll('[required]');
+        for (const field of requiredFields) {
+            if (!field.value.trim()) {
+                throw new Error(`Please fill in ${field.previousElementSibling.textContent}`);
+            }
+        }
+
+        // Handle file uploads first
+        const passportFile = passportPhoto.files[0];
+        const selfieFile = selfiePhoto.files[0];
+        
+        let passportUrl = '';
+        let selfieUrl = '';
+
+        // Validate file types and sizes
+        if (passportFile) {
+            if (!passportFile.type.startsWith('image/')) {
+                throw new Error('Passport photo must be an image file');
+            }
+            if (passportFile.size > 5 * 1024 * 1024) { // 5MB limit
+                throw new Error('Passport photo must be less than 5MB');
+            }
+            const passportStorageRef = storageRef(storage, `staff-photos/${Date.now()}-passport-${passportFile.name}`);
+            await uploadBytes(passportStorageRef, passportFile);
+            passportUrl = await getDownloadURL(passportStorageRef);
+        }
+
+        if (selfieFile) {
+            if (!selfieFile.type.startsWith('image/')) {
+                throw new Error('Selfie photo must be an image file');
+            }
+            if (selfieFile.size > 5 * 1024 * 1024) { // 5MB limit
+                throw new Error('Selfie photo must be less than 5MB');
+            }
+            const selfieStorageRef = storageRef(storage, `staff-photos/${Date.now()}-selfie-${selfieFile.name}`);
+            await uploadBytes(selfieStorageRef, selfieFile);
+            selfieUrl = await getDownloadURL(selfieStorageRef);
+        }
+
+        // Collect siblings data
+        const siblings = [];
+        const count = parseInt(siblingsCount.value) || 0;
+        
+        for (let i = 0; i < count; i++) {
+            const siblingName = document.getElementById(`siblingName${i}`).value.trim();
+            const siblingContact = document.getElementById(`siblingContact${i}`).value.trim();
+            const siblingIcPassport = document.getElementById(`siblingIcPassport${i}`).value.trim();
+            
+            if (siblingName && siblingContact && siblingIcPassport) {
+                siblings.push({
+                    name: siblingName,
+                    contact: siblingContact,
+                    icPassport: siblingIcPassport
+                });
+            }
+        }
+
+        // Handle race value
+        const raceSelect = document.getElementById('race');
+        const raceValue = raceSelect.value === 'Other' 
+            ? document.getElementById('otherRace').value.trim()
+            : raceSelect.value;
+
+        // Handle religion value
+        const religionSelect = document.getElementById('religion');
+        const religionValue = religionSelect.value === 'Other' 
+            ? document.getElementById('otherReligion').value.trim()
+            : religionSelect.value;
+
+        // Handle disability value
+        const hasDisability = document.querySelector('input[name="hasDisability"]:checked');
+        const disabilityValue = hasDisability ? hasDisability.value : 'no';
+        const disabilityDetails = disabilityValue === 'yes' 
+            ? document.getElementById('disabilityDetails').value.trim()
+            : '';
+
+        // Handle marital status and partner information
+        const maritalStatus = document.querySelector('input[name="maritalStatus"]:checked').value;
+        const partnerInfo = maritalStatus === 'married' ? {
+            name: document.getElementById('partnerName').value.trim(),
+            contact: document.getElementById('partnerContact').value.trim(),
+            icPassport: document.getElementById('partnerIcPassport').value.trim()
+        } : null;
+
+        // Create the data object
+        const formData = {
+            firstName: document.getElementById('firstName').value.trim(),
+            lastName: document.getElementById('lastName').value.trim(),
+            bloodGroup: document.getElementById('bloodGroup').value,
+            birthDate: document.getElementById('birthDate').value,
+            birthTime: document.getElementById('birthTime').value,
+            phoneNumber: document.getElementById('phoneNumber').value.trim(),
+            fatherName: document.getElementById('fatherName').value.trim(),
+            fatherPhone: document.getElementById('fatherPhone').value.trim(),
+            motherName: document.getElementById('motherName').value.trim(),
+            motherPhone: document.getElementById('motherPhone').value.trim(),
+            currentAddress: document.getElementById('currentAddress').value.trim(),
+            parentAddress: document.getElementById('parentAddress').value.trim(),
+            race: raceValue,
+            religion: religionValue,
+            email: document.getElementById('email').value.trim(),
+            siblings: siblings,
+            icPassport: document.getElementById('icPassport').value.trim(),
+            jobTitle: document.getElementById('jobTitle').value.trim(),
+            schoolName: document.getElementById('schoolName').value.trim(),
+            emergencyContact: document.getElementById('emergencyContact').value.trim(),
+            hasDisability: disabilityValue,
+            disabilityDetails: disabilityDetails,
+            maritalStatus: maritalStatus,
+            partnerInfo: partnerInfo,
+            passportPhoto: passportUrl,
+            selfiePhoto: selfieUrl,
+            submissionDate: new Date().toISOString()
+        };
+
+        // Save to database
         const staffRef = ref(database, 'staff');
-        await push(staffRef, formData);
+        const newStaffRef = await push(staffRef, formData);
+        
+        if (!newStaffRef.key) {
+            throw new Error('Failed to save data to database');
+        }
+
+        // Show success message
         showSuccessMessage();
+
+        // Reset form
         staffForm.reset();
         siblingsContainer.innerHTML = '';
         partnerInfoContainer.style.display = 'none';
@@ -313,9 +373,15 @@ staffForm.addEventListener('submit', async (e) => {
         handleRaceChange();
         handleReligionChange();
         validateForm();
+
     } catch (error) {
         console.error('Error submitting form:', error);
-        alert('Error submitting form. Please try again.');
+        alert(error.message || 'Error submitting form. Please try again.');
+    } finally {
+        // Reset submit button
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit';
     }
 });
 
