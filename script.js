@@ -227,6 +227,25 @@ selfiePhoto.addEventListener('change', (e) => {
     }
 });
 
+// Add phone number validation function
+function validatePhoneNumber(phoneNumber) {
+    // Remove any non-digit characters
+    const cleanedNumber = phoneNumber.replace(/\D/g, '');
+    // Check if the cleaned number is not empty and contains only digits
+    return cleanedNumber.length > 0 && /^\d+$/.test(cleanedNumber);
+}
+
+// Add input event listeners for phone number fields
+document.addEventListener('DOMContentLoaded', () => {
+    const phoneInputs = document.querySelectorAll('input[type="tel"]');
+    phoneInputs.forEach(input => {
+        input.addEventListener('input', (e) => {
+            // Remove any non-digit characters
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    });
+});
+
 // Update form submission
 staffForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -242,6 +261,43 @@ staffForm.addEventListener('submit', async (e) => {
         for (const field of requiredFields) {
             if (!field.value.trim()) {
                 throw new Error(`Please fill in ${field.previousElementSibling.textContent}`);
+            }
+        }
+
+        // Validate phone numbers
+        const phoneNumber = document.getElementById('phoneNumber').value.trim();
+        const fatherPhone = document.getElementById('fatherPhone').value.trim();
+        const motherPhone = document.getElementById('motherPhone').value.trim();
+        const emergencyContact = document.getElementById('emergencyContact').value.trim();
+
+        if (!validatePhoneNumber(phoneNumber)) {
+            throw new Error('Please enter a valid phone number (numbers only)');
+        }
+        if (!validatePhoneNumber(fatherPhone)) {
+            throw new Error('Please enter a valid father\'s phone number (numbers only)');
+        }
+        if (!validatePhoneNumber(motherPhone)) {
+            throw new Error('Please enter a valid mother\'s phone number (numbers only)');
+        }
+        if (!validatePhoneNumber(emergencyContact)) {
+            throw new Error('Please enter a valid emergency contact number (numbers only)');
+        }
+
+        // Validate partner phone if married
+        const maritalStatus = document.querySelector('input[name="maritalStatus"]:checked').value;
+        if (maritalStatus === 'married') {
+            const partnerContact = document.getElementById('partnerContact').value.trim();
+            if (partnerContact && !validatePhoneNumber(partnerContact)) {
+                throw new Error('Please enter a valid partner\'s phone number (numbers only)');
+            }
+        }
+
+        // Validate sibling phone numbers
+        const count = parseInt(siblingsCount.value) || 0;
+        for (let i = 0; i < count; i++) {
+            const siblingContact = document.getElementById(`siblingContact${i}`).value.trim();
+            if (siblingContact && !validatePhoneNumber(siblingContact)) {
+                throw new Error(`Please enter a valid phone number for Sibling ${i + 1} (numbers only)`);
             }
         }
 
@@ -279,8 +335,6 @@ staffForm.addEventListener('submit', async (e) => {
 
         // Collect siblings data
         const siblings = [];
-        const count = parseInt(siblingsCount.value) || 0;
-        
         for (let i = 0; i < count; i++) {
             const siblingName = document.getElementById(`siblingName${i}`).value.trim();
             const siblingContact = document.getElementById(`siblingContact${i}`).value.trim();
@@ -315,7 +369,6 @@ staffForm.addEventListener('submit', async (e) => {
             : '';
 
         // Handle marital status and partner information
-        const maritalStatus = document.querySelector('input[name="maritalStatus"]:checked').value;
         const partnerInfo = maritalStatus === 'married' ? {
             name: document.getElementById('partnerName').value.trim(),
             contact: document.getElementById('partnerContact').value.trim(),
@@ -329,11 +382,11 @@ staffForm.addEventListener('submit', async (e) => {
             bloodGroup: document.getElementById('bloodGroup').value,
             birthDate: document.getElementById('birthDate').value,
             birthTime: document.getElementById('birthTime').value,
-            phoneNumber: document.getElementById('phoneNumber').value.trim(),
+            phoneNumber: phoneNumber,
             fatherName: document.getElementById('fatherName').value.trim(),
-            fatherPhone: document.getElementById('fatherPhone').value.trim(),
+            fatherPhone: fatherPhone,
             motherName: document.getElementById('motherName').value.trim(),
-            motherPhone: document.getElementById('motherPhone').value.trim(),
+            motherPhone: motherPhone,
             currentAddress: document.getElementById('currentAddress').value.trim(),
             parentAddress: document.getElementById('parentAddress').value.trim(),
             race: raceValue,
@@ -343,7 +396,7 @@ staffForm.addEventListener('submit', async (e) => {
             icPassport: document.getElementById('icPassport').value.trim(),
             jobTitle: document.getElementById('jobTitle').value.trim(),
             schoolName: document.getElementById('schoolName').value.trim(),
-            emergencyContact: document.getElementById('emergencyContact').value.trim(),
+            emergencyContact: emergencyContact,
             hasDisability: disabilityValue,
             disabilityDetails: disabilityDetails,
             maritalStatus: maritalStatus,
