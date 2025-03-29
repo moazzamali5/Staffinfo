@@ -316,9 +316,11 @@ staffForm.addEventListener('submit', async (e) => {
             if (passportFile.size > 5 * 1024 * 1024) { // 5MB limit
                 throw new Error('Passport photo must be less than 5MB');
             }
+            console.log('Uploading passport photo...');
             const passportStorageRef = storageRef(storage, `staff-photos/${Date.now()}-passport-${passportFile.name}`);
             await uploadBytes(passportStorageRef, passportFile);
             passportUrl = await getDownloadURL(passportStorageRef);
+            console.log('Passport photo uploaded successfully:', passportUrl);
         }
 
         if (selfieFile) {
@@ -328,9 +330,11 @@ staffForm.addEventListener('submit', async (e) => {
             if (selfieFile.size > 5 * 1024 * 1024) { // 5MB limit
                 throw new Error('Selfie photo must be less than 5MB');
             }
+            console.log('Uploading selfie photo...');
             const selfieStorageRef = storageRef(storage, `staff-photos/${Date.now()}-selfie-${selfieFile.name}`);
             await uploadBytes(selfieStorageRef, selfieFile);
             selfieUrl = await getDownloadURL(selfieStorageRef);
+            console.log('Selfie photo uploaded successfully:', selfieUrl);
         }
 
         // Collect siblings data
@@ -403,7 +407,6 @@ staffForm.addEventListener('submit', async (e) => {
             partnerInfo: partnerInfo,
             passportPhoto: passportUrl,
             selfiePhoto: selfieUrl,
-            // Add bank details
             bankDetails: {
                 bankName: document.getElementById('bankName').value.trim(),
                 accountHolderName: document.getElementById('accountHolderName').value.trim(),
@@ -412,13 +415,18 @@ staffForm.addEventListener('submit', async (e) => {
             submissionDate: new Date().toISOString()
         };
 
+        console.log('Form data prepared:', formData);
+
         // Save to database
+        console.log('Saving to database...');
         const staffRef = ref(database, 'staff');
         const newStaffRef = await push(staffRef, formData);
         
         if (!newStaffRef.key) {
             throw new Error('Failed to save data to database');
         }
+
+        console.log('Data saved successfully with key:', newStaffRef.key);
 
         // Show success message
         showSuccessMessage();
@@ -435,6 +443,11 @@ staffForm.addEventListener('submit', async (e) => {
 
     } catch (error) {
         console.error('Error submitting form:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
         alert(error.message || 'Error submitting form. Please try again.');
     } finally {
         // Reset submit button
@@ -487,6 +500,18 @@ function displayResponses(data) {
                     `;
                 }
 
+                let bankDetailsHtml = '';
+                if (value.bankDetails) {
+                    bankDetailsHtml = `
+                        <div class="bank-details-section">
+                            <h3>Bank Details</h3>
+                            <p><strong>Bank Name:</strong> ${value.bankDetails.bankName}</p>
+                            <p><strong>Account Holder Name:</strong> ${value.bankDetails.accountHolderName}</p>
+                            <p><strong>Account Number:</strong> ${value.bankDetails.accountNumber}</p>
+                        </div>
+                    `;
+                }
+
                 let photosHtml = '';
                 if (value.passportPhoto || value.selfiePhoto) {
                     photosHtml = `
@@ -508,35 +533,42 @@ function displayResponses(data) {
                 }
 
                 responseCard.innerHTML = `
-                    <h3>${value.firstName} ${value.lastName}</h3>
-                    <p><strong>Blood Group:</strong> ${value.bloodGroup}</p>
-                    <p><strong>Birth Date:</strong> ${new Date(value.birthDate).toLocaleDateString()}</p>
-                    <p><strong>Birth Time:</strong> ${value.birthTime || '00:00'}</p>
-                    <p><strong>Phone Number:</strong> ${value.phoneNumber}</p>
-                    <p><strong>Email:</strong> ${value.email}</p>
-                    <p><strong>Current Address:</strong> ${value.currentAddress}</p>
-                    <p><strong>Parent's Address:</strong> ${value.parentAddress || 'Same as current address'}</p>
-                    <p><strong>Race:</strong> ${value.race}</p>
-                    <p><strong>Religion:</strong> ${value.religion}</p>
-                    <p><strong>Father's Name:</strong> ${value.fatherName}</p>
-                    <p><strong>Father's Phone:</strong> ${value.fatherPhone}</p>
-                    <p><strong>Mother's Name:</strong> ${value.motherName}</p>
-                    <p><strong>Mother's Phone:</strong> ${value.motherPhone}</p>
-                    ${siblingsHtml}
-                    ${partnerHtml}
-                    <p><strong>IC/Passport:</strong> ${value.icPassport}</p>
-                    ${photosHtml}
-                    <p><strong>Job Title:</strong> ${value.jobTitle}</p>
-                    <p><strong>School Name:</strong> ${value.schoolName}</p>
-                    <p><strong>Emergency Contact:</strong> ${value.emergencyContact}</p>
-                    <p><strong>Disability:</strong> ${value.hasDisability === 'yes' ? 'Yes - ' + value.disabilityDetails : 'No'}</p>
-                    <p><strong>Submitted:</strong> ${new Date(value.submissionDate).toLocaleString()}</p>
+                    <div class="response-header">
+                        <h3>${value.firstName} ${value.lastName}</h3>
+                        <span class="submission-date">Submitted: ${new Date(value.submissionDate).toLocaleString()}</span>
+                    </div>
+                    <div class="response-content">
+                        <p><strong>Job Title:</strong> ${value.jobTitle}</p>
+                        <p><strong>School Name:</strong> ${value.schoolName}</p>
+                        <p><strong>Blood Group:</strong> ${value.bloodGroup}</p>
+                        <p><strong>Birth Date:</strong> ${value.birthDate}</p>
+                        <p><strong>Birth Time:</strong> ${value.birthTime}</p>
+                        <p><strong>Phone Number:</strong> ${value.phoneNumber}</p>
+                        <p><strong>Email:</strong> ${value.email}</p>
+                        <p><strong>IC/Passport:</strong> ${value.icPassport}</p>
+                        <p><strong>Race:</strong> ${value.race}</p>
+                        <p><strong>Religion:</strong> ${value.religion}</p>
+                        <p><strong>Marital Status:</strong> ${value.maritalStatus}</p>
+                        ${partnerHtml}
+                        <p><strong>Current Address:</strong> ${value.currentAddress}</p>
+                        <p><strong>Parent Address:</strong> ${value.parentAddress}</p>
+                        <p><strong>Father's Name:</strong> ${value.fatherName}</p>
+                        <p><strong>Father's Phone:</strong> ${value.fatherPhone}</p>
+                        <p><strong>Mother's Name:</strong> ${value.motherName}</p>
+                        <p><strong>Mother's Phone:</strong> ${value.motherPhone}</p>
+                        ${siblingsHtml}
+                        <p><strong>Emergency Contact:</strong> ${value.emergencyContact}</p>
+                        <p><strong>Disability:</strong> ${value.hasDisability === 'yes' ? 'Yes - ' + value.disabilityDetails : 'No'}</p>
+                        ${bankDetailsHtml}
+                        ${photosHtml}
+                    </div>
                 `;
+                
                 responsesList.appendChild(responseCard);
             }
         });
     } else {
-        responsesList.innerHTML = '<p>No responses yet.</p>';
+        responsesList.innerHTML = '<p>No submissions found.</p>';
     }
 }
 
