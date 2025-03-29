@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HICAA Staff Information</title>
+    <title>HICCA Staff Information</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -25,10 +25,22 @@
 
     <div class="main-content">
         <header>
-            <h2>Staff Particulars</h2>
+            <h2>Staff Information</h2>
         </header>
 
-        <form id="staffForm">
+        <!-- Email Verification Section -->
+        <div id="emailVerificationSection" class="email-verification-section">
+            <h3>Email Verification</h3>
+            <p>Please enter your email address to proceed with the form.</p>
+            <div class="form-group">
+                <label for="verificationEmail">Email Address</label>
+                <input type="email" id="verificationEmail" name="verificationEmail" required>
+            </div>
+            <button type="button" id="proceedBtn" class="proceed-btn">Proceed</button>
+        </div>
+
+        <!-- Main Form Section -->
+        <form id="staffForm" style="display: none;">
             <div class="form-row">
                 <div class="form-group">
                     <label for="firstName">First Name</label>
@@ -332,6 +344,12 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/11.5.0/firebase-analytics.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.5.0/firebase-database.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.5.0/firebase-storage.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("0fGmuOYK5Kg3rkRQF");
+        })();
+    </script>
     <script type="module" src="script.js"></script>
 </body>
 </html> 
