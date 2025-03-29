@@ -880,4 +880,78 @@ form {
     .photo-container {
         max-width: 100%;
     }
+}
+
+/* Bank Details Section */
+.bank-details-section {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    border: 1px solid var(--golden-shade);
+}
+
+.bank-details-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Verification Section */
+.verification-section {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    border: 1px solid var(--golden-shade);
+}
+
+.verification-text {
+    margin-bottom: 20px;
+}
+
+.verification-text p {
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.verification-text ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.verification-text ul li {
+    color: var(--text-color);
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.verification-text ul li:before {
+    content: "•";
+    color: var(--primary-color);
+    font-weight: bold;
+    position: absolute;
+    left: -20px;
+}
+
+.verification-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.verification-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.verification-checkbox label {
+    color: var(--text-color);
+    font-weight: 500;
+    cursor: pointer;
 } 
