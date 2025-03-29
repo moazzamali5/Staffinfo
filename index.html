@@ -192,30 +192,26 @@
                 <input type="text" id="schoolName" name="schoolName" required>
             </div>
 
-            <div class="form-group">
-                <label for="emergencyContact">Emergency Contact</label>
-                <input type="tel" id="emergencyContact" name="emergencyContact" required>
-            </div>
-
-            <div class="form-group">
-                <label>Do you have any disability?</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="hasDisability" value="yes" required>
-                        <span class="radio-custom"></span>
-                        <span class="radio-text">Yes</span>
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="hasDisability" value="no" required>
-                        <span class="radio-custom"></span>
-                        <span class="radio-text">No</span>
-                    </label>
+            <!-- Bank Details Section -->
+            <div class="bank-details-section">
+                <h3>Bank Details</h3>
+                <div class="form-group">
+                    <label for="bankName">Bank Name</label>
+                    <input type="text" id="bankName" name="bankName" required>
+                </div>
+                <div class="form-group">
+                    <label for="accountHolderName">Account Holder Name</label>
+                    <input type="text" id="accountHolderName" name="accountHolderName" required>
+                </div>
+                <div class="form-group">
+                    <label for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" name="accountNumber" required>
                 </div>
             </div>
 
-            <div class="form-group" id="disabilityDetailsContainer" style="display: none;">
-                <label for="disabilityDetails">Please explain your disability:</label>
-                <textarea id="disabilityDetails" name="disabilityDetails" rows="3"></textarea>
+            <div class="form-group">
+                <label for="emergencyContact">Emergency Contact</label>
+                <input type="tel" id="emergencyContact" name="emergencyContact" required>
             </div>
 
             <div class="form-group">
@@ -263,6 +259,23 @@
                         </div>
                         <small class="upload-note">Please upload a clear selfie photo</small>
                     </div>
+                </div>
+            </div>
+
+            <!-- Verification Checkbox -->
+            <div class="verification-section">
+                <div class="verification-text">
+                    <p>I hereby declare that all the information provided in this form is true and accurate to the best of my knowledge. I understand that:</p>
+                    <ul>
+                        <li>I have double-checked all information entered</li>
+                        <li>Any dishonesty or misrepresentation may lead to immediate rejection of my application</li>
+                        <li>If employed, any false information may result in on-the-spot termination</li>
+                        <li>I am responsible for any consequences arising from false or misleading information</li>
+                    </ul>
+                </div>
+                <div class="verification-checkbox">
+                    <input type="checkbox" id="verificationCheck" name="verificationCheck" required>
+                    <label for="verificationCheck">I agree to the above declaration</label>
                 </div>
             </div>
 
