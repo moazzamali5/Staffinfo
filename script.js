@@ -403,6 +403,12 @@ staffForm.addEventListener('submit', async (e) => {
             partnerInfo: partnerInfo,
             passportPhoto: passportUrl,
             selfiePhoto: selfieUrl,
+            // Add bank details
+            bankDetails: {
+                bankName: document.getElementById('bankName').value.trim(),
+                accountHolderName: document.getElementById('accountHolderName').value.trim(),
+                accountNumber: document.getElementById('accountNumber').value.trim()
+            },
             submissionDate: new Date().toISOString()
         };
 
