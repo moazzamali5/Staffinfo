@@ -43,6 +43,9 @@ const passportPhoto = document.getElementById('passportPhoto');
 const selfiePhoto = document.getElementById('selfiePhoto');
 const passportFileName = document.getElementById('passportFileName');
 const selfieFileName = document.getElementById('selfieFileName');
+const emailVerificationSection = document.getElementById('emailVerificationSection');
+const verificationEmail = document.getElementById('verificationEmail');
+const proceedBtn = document.getElementById('proceedBtn');
 
 // Admin password (in a real application, this should be handled server-side)
 const ADMIN_PASSWORD = "bananacheese";
@@ -246,7 +249,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Update form submission
+// Email verification functionality
+proceedBtn.addEventListener('click', async () => {
+    try {
+        const email = verificationEmail.value.trim();
+        if (!email) {
+            alert('Please enter your email address');
+            return;
+        }
+
+        // Show loading state
+        proceedBtn.disabled = true;
+        proceedBtn.textContent = 'Sending...';
+
+        // Send email using EmailJS
+        const templateParams = {
+            name: email.split('@')[0], // Using the part before @ as the name
+            email: email,
+            title: 'Staff Form View'
+        };
+
+        await emailjs.send('service_i9nsvw2', 'template_g538xtd', templateParams);
+
+        // Hide email verification section and show form
+        emailVerificationSection.style.display = 'none';
+        staffForm.style.display = 'block';
+
+        // Store the email in the form data
+        document.getElementById('email').value = email;
+
+    } catch (error) {
+        console.error('Error sending email:', error);
+        alert('Error sending email. Please try again.');
+        proceedBtn.disabled = false;
+        proceedBtn.textContent = 'Proceed';
+    }
+});
+
+// Update form submission to include verification email
 staffForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -395,7 +435,7 @@ staffForm.addEventListener('submit', async (e) => {
             parentAddress: document.getElementById('parentAddress').value.trim(),
             race: raceValue,
             religion: religionValue,
-            email: document.getElementById('email').value.trim(),
+            email: verificationEmail.value.trim(),
             siblings: siblings,
             icPassport: document.getElementById('icPassport').value.trim(),
             jobTitle: document.getElementById('jobTitle').value.trim(),
