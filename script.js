@@ -253,8 +253,16 @@ document.addEventListener('DOMContentLoaded', () => {
 proceedBtn.addEventListener('click', async () => {
     try {
         const email = verificationEmail.value.trim();
+        
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
             alert('Please enter your email address');
+            return;
+        }
+        
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address');
             return;
         }
 
