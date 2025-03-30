@@ -1,15 +1,17 @@
 :root {
-    --primary-color: #FF6B6B;
-    --secondary-color: #4ECDC4;
-    --accent-color: #FFD700;
+    --primary-color: #87CEEB;  /* Lighter Sky Blue */
+    --secondary-color: #32CD32;  /* More Vibrant Parrot Green */
+    --accent-color: #FF6B6B;
     --background-color: #f8f9fa;
     --text-color: #2d3436;
     --card-bg: #ffffff;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --dark-color: #2C3E50;
+    --dark-color: #2d3436;
     --light-color: #F7F7F7;
-    --gray-color: #95A5A6;
-    --gradient: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    --gray-color: #636e72;
+    --gradient: linear-gradient(135deg, #87CEEB, #32CD32);
+    --border-color: #e0e0e0;
+    --hover-color: rgba(135, 206, 235, 0.1);
 }
 
 * {
@@ -21,7 +23,7 @@
 
 body {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80');
+                url('back.jpeg') no-repeat center center fixed;
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -35,13 +37,13 @@ body {
 /* Sidebar Styles */
 .sidebar {
     width: 280px;
-    background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     padding: 2rem;
     position: fixed;
     height: 100vh;
     transition: transform 0.3s ease;
-    box-shadow: 5px 0 15px var(--shadow-color);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -201,15 +203,15 @@ h1::after {
 }
 
 .icon-circle {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     width: 60px;
     height: 60px;
-    background: var(--gradient);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 1.5rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 180, 216, 0.2);
 }
 
 .section-icon {
@@ -303,23 +305,18 @@ textarea:focus, input[type="text"]:focus, input[type="tel"]:focus {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     border: none;
-    padding: 1.2rem 2.5rem;
-    border-radius: 12px;
-    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 500;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px var(--shadow-color);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 600;
     width: 100%;
-    margin-top: 2rem;
-    display: block;
+    margin-top: 1rem;
 }
 
 .submit-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px var(--shadow-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 180, 216, 0.2);
 }
 
 .submit-btn:disabled {
@@ -1148,20 +1145,21 @@ textarea:focus, input[type="text"]:focus, input[type="tel"]:focus {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     border: none;
-    padding: 1rem 2rem;
-    border-radius: 12px;
-    font-size: 1.1rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 500;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px var(--shadow-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 120px;
+    justify-content: center;
 }
 
 .nav-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px var(--shadow-color);
+    box-shadow: 0 4px 12px rgba(0, 180, 216, 0.2);
 }
 
 .nav-btn:disabled {
@@ -1270,23 +1268,18 @@ textarea:focus, input[type="text"]:focus, input[type="tel"]:focus {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     border: none;
-    padding: 1.2rem 2.5rem;
-    border-radius: 12px;
-    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 500;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px var(--shadow-color);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 600;
     width: 100%;
-    margin-top: 2rem;
-    display: block;
+    margin-top: 1rem;
 }
 
 .submit-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px var(--shadow-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 180, 216, 0.2);
 }
 
 .submit-btn:disabled {
@@ -1634,7 +1627,7 @@ textarea:focus, input[type="text"]:focus, input[type="tel"]:focus {
 }
 
 .visit-details {
-    background: rgba(78, 205, 196, 0.1);
+    background: rgba(135, 206, 235, 0.1);
     padding: 1.5rem;
     border-radius: 15px;
     margin: 1rem 0;
@@ -1661,4 +1654,9 @@ textarea:focus, input[type="text"]:focus, input[type="tel"]:focus {
     margin: 0;
     font-size: 1rem;
     line-height: 1.5;
+}
+
+function createConfetti() {
+    const colors = ['#87CEEB', '#32CD32', '#FFD700', '#FF69B4', '#B0E0E6'];
+    // ... rest of the confetti code ...
 } 
