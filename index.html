@@ -3,321 +3,546 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Particulars</title>
+    <title>HICAA Feedback - Share Your Experience</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            position: absolute;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        .thank-you-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .thank-you-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .thank-you-content i {
+            font-size: 4rem;
+            color: #FFD700;
+            margin-bottom: 1rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .thank-you-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .thank-you-content p {
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .thank-you-content button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .thank-you-content button:hover {
+            background: #ff5252;
+        }
+
+        .responses-section {
+            display: none;
+            padding: 2rem;
+        }
+
+        .responses-section.active {
+            display: block;
+        }
+
+        .filter-section {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-section select {
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .feedback-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .rating-summary {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .rating-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rating-item i {
+            color: #FFD700;
+        }
+
+        .improvements {
+            margin: 1rem 0;
+        }
+
+        .improvements h3 {
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .improvements p {
+            color: var(--gray-color);
+            font-style: italic;
+        }
+
+        .overall-comment {
+            background: var(--light-color);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <div class="sidebar-toggle">
-        <i class="fas fa-bars"></i>
+    <!-- Branch Selection Modal -->
+    <div id="branchModal" class="modal">
+        <div class="modal-content branch-selection">
+            <h2>Select Branch</h2>
+            <p>Please select the branch you want to rate:</p>
+            <form id="branchForm">
+                <div class="branch-options">
+                    <label class="branch-option">
+                        <input type="radio" name="branch" value="ICOM SQUARE" required>
+                        <span class="branch-name">ICOM SQUARE</span>
+                    </label>
+                    <label class="branch-option">
+                        <input type="radio" name="branch" value="BATU KAWA" required>
+                        <span class="branch-name">BATU KAWA</span>
+                    </label>
+                    <label class="branch-option">
+                        <input type="radio" name="branch" value="AEMON MALL" required>
+                        <span class="branch-name">AEMON MALL</span>
+                    </label>
+                    <label class="branch-option">
+                        <input type="radio" name="branch" value="EMPORIUM MALL" required>
+                        <span class="branch-name">EMPORIUM MALL</span>
+                    </label>
+                </div>
+                <button type="submit" class="submit-btn">Continue</button>
+            </form>
+        </div>
     </div>
-    
+
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuBtn" class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-header">
+        <div class="logo">
+            <img src="logo.png" alt="HICAA Logo">
         </div>
         <nav>
             <ul>
-                <li><a href="#" id="staffFormLink" class="active"><i class="fas fa-user"></i> Staff Form</a></li>
-                <li><a href="#" id="responsesBtn"><i class="fas fa-list"></i> Responses</a></li>
+                <li><a href="#" onclick="toggleSections('feedback')" class="active">Give Feedback</a></li>
+                <li><a href="#" onclick="toggleSections('responses')">View Responses</a></li>
             </ul>
         </nav>
     </div>
 
+    <!-- Main Content -->
     <div class="main-content">
-        <header>
-            <h2>Staff Particulars</h2>
-        </header>
+        <!-- Feedback Section -->
+        <section id="feedbackSection">
+            <div class="container">
+                <h1>Share Your Experience with HICAA</h1>
+                <p class="subtitle" style="color: rgb(195, 201, 160);">Your feedback helps us improve and serve you better!</p>
 
-        <!-- Email Verification Section -->
-        <div id="emailVerificationSection" class="email-verification-section">
-            <h3>Email Verification</h3>
-            <p>Please enter your email address to proceed with the form.</p>
-            <div class="form-group">
-                <label for="verificationEmail">Email Address</label>
-                <input type="email" id="verificationEmail" name="verificationEmail" required>
-            </div>
-            <button type="button" id="proceedBtn" class="proceed-btn">Proceed</button>
-        </div>
-
-        <!-- Main Form Section -->
-        <form id="staffForm" style="display: none;">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="firstName">First Name</label>
-                    <input type="text" id="firstName" name="firstName" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="lastName">Last Name</label>
-                    <input type="text" id="lastName" name="lastName" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="bloodGroup">Blood Group</label>
-                    <select id="bloodGroup" name="bloodGroup" required>
-                        <option value="">Select Blood Group</option>
-                        <option value="A+">A+</option>
-                        <option value="A-">A-</option>
-                        <option value="B+">B+</option>
-                        <option value="B-">B-</option>
-                        <option value="O+">O+</option>
-                        <option value="O-">O-</option>
-                        <option value="AB+">AB+</option>
-                        <option value="AB-">AB-</option>
-                        <option value="NotSure">NotSure</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="birthDate">Birth Date</label>
-                    <input type="date" id="birthDate" name="birthDate" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="birthTime">Birth Time</label>
-                    <input type="time" id="birthTime" name="birthTime" required value="00:00">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="phoneNumber">Phone Number</label>
-                <input type="number" id="phoneNumber" name="phoneNumber" required>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="fatherName">Father's Name</label>
-                    <input type="text" id="fatherName" name="fatherName" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="fatherPhone">Father's Phone Number</label>
-                    <input type="tel" id="fatherPhone" name="fatherPhone" required>
-                    <small class="emergency-note">Contact information in case for any emergency purposes</small>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="motherName">Mother's Name</label>
-                    <input type="text" id="motherName" name="motherName" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="motherPhone">Mother's Phone Number</label>
-                    <input type="tel" id="motherPhone" name="motherPhone" required>
-                    <small class="emergency-note">Contact information in case for any emergency purposes</small>
-                </div>
-            </div>
-
-            <!-- Marital Status Section -->
-            <div class="form-group">
-                <label>Marital Status</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="maritalStatus" value="single" checked>
-                        <span class="radio-custom"></span>
-                        <span class="radio-text">Single</span>
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="maritalStatus" value="married">
-                        <span class="radio-custom"></span>
-                        <span class="radio-text">Married</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Partner Information Section -->
-            <div id="partnerInfoContainer" style="display: none;">
-                <h3>Partner Information</h3>
-                <div class="form-group">
-                    <label for="partnerName">Partner's Name</label>
-                    <input type="text" id="partnerName" name="partnerName">
-                </div>
-                <div class="form-group">
-                    <label for="partnerContact">Partner's Contact</label>
-                    <input type="tel" id="partnerContact" name="partnerContact">
-                </div>
-                <div class="form-group">
-                    <label for="partnerIcPassport">Partner's IC/Passport Number</label>
-                    <input type="text" id="partnerIcPassport" name="partnerIcPassport">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="race">Race</label>
-                    <select id="race" name="race" required onchange="handleRaceChange()">
-                        <option value="">Select Race</option>
-                        <option value="Malay">Malay</option>
-                        <option value="Chinese">Chinese</option>
-                        <option value="Indian">Indian</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div id="otherRaceContainer">
-                        <label for="otherRace">Please specify other race:</label>
-                        <input type="text" id="otherRace" name="otherRace" placeholder="Enter race">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="religion">Religion</label>
-                    <select id="religion" name="religion" required onchange="handleReligionChange()">
-                        <option value="">Select Religion</option>
-                        <option value="Islam">Islam</option>
-                        <option value="Buddhism">Buddhism</option>
-                        <option value="Christianity">Christianity</option>
-                        <option value="Hinduism">Hinduism</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div id="otherReligionContainer">
-                        <label for="otherReligion">Please specify other religion:</label>
-                        <input type="text" id="otherReligion" name="otherReligion" placeholder="Enter religion">
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="email">Email ID</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-
-            <div class="form-group">
-                <label for="currentAddress">Current Address</label>
-                <textarea id="currentAddress" name="currentAddress" required rows="3"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="parentAddress">Parent's Address (if different from current address)</label>
-                <textarea id="parentAddress" name="parentAddress" rows="3"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="jobTitle">Job Title</label>
-                <input type="text" id="jobTitle" name="jobTitle" required>
-            </div>
-
-            <div class="form-group">
-                <label for="schoolName">School Name</label>
-                <input type="text" id="schoolName" name="schoolName" required>
-            </div>
-
-            <!-- Bank Details Section -->
-            <div class="bank-details-section">
-                <h3>Bank Details</h3>
-                <div class="form-group">
-                    <label for="bankName">Bank Name</label>
-                    <input type="text" id="bankName" name="bankName" required>
-                </div>
-                <div class="form-group">
-                    <label for="accountHolderName">Account Holder Name</label>
-                    <input type="text" id="accountHolderName" name="accountHolderName" required>
-                </div>
-                <div class="form-group">
-                    <label for="accountNumber">Account Number</label>
-                    <input type="text" id="accountNumber" name="accountNumber" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="emergencyContact">Emergency Contact</label>
-                <input type="tel" id="emergencyContact" name="emergencyContact" required>
-            </div>
-
-            <div class="form-group">
-                <label for="siblingsCount">Number of Siblings</label>
-                <input type="number" id="siblingsCount" name="siblingsCount" min="0" required>
-            </div>
-
-            <div id="siblingsContainer">
-                <!-- Siblings will be added here dynamically -->
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="icPassport">IC/Passport Number</label>
-                    <input type="text" id="icPassport" name="icPassport" required>
-                </div>
-            </div>
-
-            <!-- Document Upload Section -->
-            <div class="upload-section">
-                <h3>Document Upload</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="passportPhoto">Passport/IC Photo</label>
-                        <div class="file-upload-container">
-                            <input type="file" id="passportPhoto" name="passportPhoto" accept="image/*" required>
-                            <label for="passportPhoto" class="file-upload-label">
-                                <i class="fas fa-upload"></i>
-                                <span>Choose File</span>
-                            </label>
-                            <span class="file-name" id="passportFileName">No file chosen</span>
+                <form id="feedbackForm">
+                    <!-- Receipt Question Section -->
+                    <div id="receiptQuestion" class="rating-section visible">
+                        <div class="section-header">
+                            <i class="fas fa-receipt"></i>
+                            <h2>Do you have your receipt?</h2>
                         </div>
-                        <small class="upload-note">Please upload a clear photo of your passport or IC</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="selfiePhoto">Selfie Photo</label>
-                        <div class="file-upload-container">
-                            <input type="file" id="selfiePhoto" name="selfiePhoto" accept="image/*" required>
-                            <label for="selfiePhoto" class="file-upload-label">
-                                <i class="fas fa-camera"></i>
-                                <span>Choose File</span>
+                        <div class="radio-group">
+                            <label class="radio-btn">
+                                <input type="radio" name="hasReceipt" value="yes">
+                                <span class="radio-label">
+                                    <i class="fas fa-check-circle"></i>
+                                    Yes, I have my receipt
+                                </span>
                             </label>
-                            <span class="file-name" id="selfieFileName">No file chosen</span>
+                            <label class="radio-btn">
+                                <input type="radio" name="hasReceipt" value="no">
+                                <span class="radio-label">
+                                    <i class="fas fa-clock"></i>
+                                    No, but I remember when
+                                </span>
+                            </label>
                         </div>
-                        <small class="upload-note">Please upload a clear selfie photo</small>
+                        <div class="nav-buttons">
+                            <button type="button" class="nav-btn next" disabled>Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
                     </div>
+
+                    <!-- Receipt Upload Section -->
+                    <div id="receiptUpload" class="rating-section hidden">
+                        <div class="section-header">
+                            <i class="fas fa-upload"></i>
+                            <h2>Upload Your Receipt</h2>
+                        </div>
+                        <div class="receipt-upload-container">
+                            <div class="receipt-preview" id="receiptPreview">
+                                <i class="fas fa-receipt"></i>
+                                <p>Upload your receipt image</p>
+                            </div>
+                            <input type="file" id="receiptInput" accept="image/png, image/jpeg" hidden>
+                            <label for="receiptInput" class="upload-btn">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                Choose File
+                            </label>
+                        </div>
+                        <div class="nav-buttons">
+                            <button type="button" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="button" class="nav-btn next" disabled>Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Last Purchase Section -->
+                    <div id="lastPurchase" class="rating-section hidden">
+                        <div class="section-header">
+                            <i class="fas fa-calendar-alt"></i>
+                            <h2>When was your last purchase?</h2>
+                        </div>
+                        <div class="input-container">
+                            <textarea name="lastPurchaseDate" placeholder="Tell us when you last visited HICAA..."></textarea>
+                        </div>
+                        <div class="nav-buttons">
+                            <button type="button" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="button" class="nav-btn next" disabled>Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Dining Type Section -->
+                    <div id="diningType" class="rating-section hidden">
+                        <div class="section-header">
+                            <div class="icon-circle">
+                                <i class="fas fa-utensils section-icon"></i>
+                            </div>
+                            <h2>How did you enjoy your drinks?</h2>
+                        </div>
+                        <div class="dining-options">
+                            <label class="dining-option">
+                                <input type="radio" name="diningType" value="dineIn" required>
+                                <span class="dining-name">Dine In</span>
+                            </label>
+                            <label class="dining-option">
+                                <input type="radio" name="diningType" value="takeOut" required>
+                                <span class="dining-name">Take Out</span>
+                            </label>
+                            <label class="dining-option">
+                                <input type="radio" name="diningType" value="delivery" required>
+                                <span class="dining-name">Delivery</span>
+                            </label>
+                        </div>
+                        <div class="navigation-buttons">
+                            <button class="nav-btn prev" onclick="navigateSection(-1)">
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </button>
+                            <button class="nav-btn next" onclick="navigateSection(1)" disabled>
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Drinks Section -->
+                    <div id="drinks" class="rating-section hidden">
+                        <div class="section-header">
+                            <div class="icon-circle">
+                                <i class="fas fa-glass-martini-alt section-icon"></i>
+                            </div>
+                            <h2>What drinks did you order?</h2>
+                        </div>
+                        <div class="drinks-input">
+                            <textarea name="drinksOrdered" placeholder="Please list the drinks you ordered..." required></textarea>
+                        </div>
+                        <div class="navigation-buttons">
+                            <button type="button" class="nav-btn prev" onclick="navigateSection(-1)">
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </button>
+                            <button type="button" class="nav-btn next" onclick="navigateSection(1)" disabled>
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Spending Section -->
+                    <div id="spending" class="rating-section hidden">
+                        <div class="section-header">
+                            <div class="icon-circle">
+                                <i class="fas fa-dollar-sign section-icon"></i>
+                            </div>
+                            <h2>How much did you spend per person?</h2>
+                        </div>
+                        <div class="spending-input">
+                            <input type="number" name="spendingPerPerson" placeholder="Enter amount in RM" min="0" step="0.01" required>
+                        </div>
+                        <div class="navigation-buttons">
+                            <button type="button" class="nav-btn prev" onclick="navigateSection(-1)">
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </button>
+                            <button type="button" class="nav-btn next" onclick="navigateSection(1)" disabled>
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations Section -->
+                    <div id="recommendations" class="rating-section hidden">
+                        <div class="section-header">
+                            <div class="icon-circle">
+                                <i class="fas fa-thumbs-up section-icon"></i>
+                            </div>
+                            <h2>What drinks would you recommend?</h2>
+                        </div>
+                        <div class="recommendations-input">
+                            <textarea name="recommendedDrinks" placeholder="Please list the drinks you would recommend to others..." required></textarea>
+                        </div>
+                        <div class="navigation-buttons">
+                            <button type="button" class="nav-btn prev" onclick="navigateSection(-1)">
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </button>
+                            <button type="button" class="nav-btn next" onclick="navigateSection(1)" disabled>
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product Rating Section -->
+                    <div id="productRating" class="rating-section hidden">
+                        <div class="section-header">
+                            <i class="fas fa-box"></i>
+                            <h2>Rate Our Products</h2>
+                        </div>
+                        <div class="stars">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                        <div class="input-container">
+                            <textarea name="productImprovement" placeholder="What could we improve about our products?"></textarea>
+                        </div>
+                        <div class="nav-buttons">
+                            <button type="button" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="button" class="nav-btn next" disabled>Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Environment Rating Section -->
+                    <div id="environmentRating" class="rating-section hidden">
+                        <div class="section-header">
+                            <i class="fas fa-store"></i>
+                            <h2>Rate Our Store Environment</h2>
+                        </div>
+                        <div class="stars">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                        <div class="input-container">
+                            <textarea name="environmentImprovement" placeholder="How can we make our store environment better?"></textarea>
+                        </div>
+                        <div class="nav-buttons">
+                            <button type="button" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="button" class="nav-btn next" disabled>Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Service Rating Section -->
+                    <div id="serviceRating" class="rating-section hidden">
+                        <div class="section-header">
+                            <i class="fas fa-handshake"></i>
+                            <h2>Rate Our Service</h2>
+                        </div>
+                        <div class="stars">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                        <div class="input-container">
+                            <textarea name="serviceImprovement" placeholder="How can we improve our service?"></textarea>
+                        </div>
+                        <div class="nav-buttons">
+                            <button type="button" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="button" class="nav-btn next" disabled>Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Overall Experience Section -->
+                    <div id="overallExperience" class="rating-section hidden">
+                        <div class="section-header">
+                            <i class="fas fa-heart"></i>
+                            <h2>Overall Experience</h2>
+                        </div>
+                        <div class="stars">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                        <div class="input-container">
+                            <textarea name="overallComment" placeholder="Share your overall experience with HICAA..."></textarea>
+                        </div>
+                        <div class="comment-upload-container">
+                            <div class="comment-upload-preview" id="commentUploadPreview">
+                                <i class="fas fa-image"></i>
+                                <p>Upload proof of your comments (optional)</p>
+                            </div>
+                            <input type="file" id="commentUploadInput" accept="image/png, image/jpeg" multiple hidden>
+                            <label for="commentUploadInput" class="upload-btn">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                Choose Files
+                            </label>
+                        </div>
+                        <div class="nav-buttons">
+                            <button type="button" class="nav-btn prev"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="submit" class="submit-btn" disabled>Submit Feedback</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- View Responses Button -->
+                <button id="viewResponses" class="view-responses-btn" style="display: none;">
+                    <i class="fas fa-chart-bar"></i>
+                    View Responses
+                </button>
+            </div>
+        </section>
+
+        <!-- Responses Section -->
+        <section id="responsesSection" style="display: none;">
+            <div class="container">
+                <h1>Customer Feedback Responses</h1>
+                <div class="filter-container">
+                    <select id="ratingFilter">
+                        <option value="">Filter by Rating</option>
+                        <option value="1">1 Star</option>
+                        <option value="2">2 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="5">5 Stars</option>
+                    </select>
+                    <select id="categoryFilter">
+                        <option value="">Filter by Category</option>
+                        <option value="product">Product</option>
+                        <option value="service">Service</option>
+                        <option value="environment">Environment</option>
+                    </select>
+                    <select id="dateFilter">
+                        <option value="">Filter by Date</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+                <div id="feedbackList">
+                    <!-- Feedback cards will be dynamically added here -->
                 </div>
             </div>
-
-            <!-- Verification Checkbox -->
-            <div class="verification-section">
-                <div class="verification-text">
-                    <p>I hereby declare that all the information provided in this form is true and accurate to the best of my knowledge. I understand that:</p>
-                    <ul>
-                        <li>I have double-checked all information entered</li>
-                        <li>Any dishonesty or misrepresentation may lead to immediate rejection of my application</li>
-                        <li>If employed, any false information may result in on-the-spot termination</li>
-                        <li>I am responsible for any consequences arising from false or misleading information</li>
-                    </ul>
-                </div>
-                <div class="verification-checkbox">
-                    <input type="checkbox" id="verificationCheck" name="verificationCheck" required>
-                    <label for="verificationCheck">I agree to the above declaration</label>
-                </div>
-            </div>
-
-            <div class="consent-section">
-                <div class="consent-text">
-                    <p>The company collects and processes your personal data for the purposes of employment administration, payroll, benefits, internal communications and emergency contact information. The data collected may include, but is not limited to, your name, address, contact information, date of birth, employment history, and other relevant information.</p>
-                    
-                    <p>Data Collection consent</p>
-                    <p>We are committed to protecting your personal data and will handle it in accordance with applicable data protection laws. Your data will be stored securely and will only be shared with authorized personnel or third parties as necessary for the stated purposes.</p>
-                    
-                    <p>You have the right to access, rectify, erase, restrict processing of, and port your personal data. You also have the right to object to the processing of your data.</p>
-                </div>
-                
-                <div class="consent-checkbox">
-                    <input type="checkbox" id="dataConsent" name="dataConsent" required>
-                    <label for="dataConsent">By checking this box, you consent to this data collection</label>
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn">Submit</button>
-        </form>
+        </section>
     </div>
 
-    <!-- Success Message -->
-    <div id="successMessage" class="success-message">
-        <div class="success-content">
-            <i class="fas fa-check-circle"></i>
-            <h3>Thank You!</h3>
-            <p>Your information has been successfully submitted.</p>
-            <button class="close-success">Close</button>
+    <!-- Customer Info Modal -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <h2>Almost there!</h2>
+            <p>Please provide your contact information to complete the feedback.</p>
+            <form id="customerForm">
+                <div class="form-group">
+                    <input type="text" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" placeholder="Your Phone Number" required>
+                </div>
+                <button type="submit" class="submit-btn">Submit</button>
+            </form>
         </div>
     </div>
 
@@ -325,31 +550,25 @@
     <div id="adminModal" class="modal">
         <div class="modal-content">
             <h2>Admin Login</h2>
-            <input type="password" id="adminPassword" placeholder="Enter Password">
-            <button id="loginBtn">Login</button>
+            <form id="adminForm">
+                <div class="form-group">
+                    <input type="password" placeholder="Enter Password" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
         </div>
     </div>
 
-    <!-- Responses Page -->
-    <div id="responsesPage" class="responses-page hidden">
-        <h2>Submitted Responses</h2>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search by first name...">
-            <i class="fas fa-search"></i>
+    <!-- Thank You Modal -->
+    <div id="thankYouModal" class="modal">
+        <div class="modal-content thank-you-content">
+            <i class="fas fa-check-circle"></i>
+            <h2>Thank You!</h2>
+            <p>Your feedback has been submitted successfully.</p>
+            <button onclick="closeThankYouModal()" class="submit-btn">Close</button>
         </div>
-        <div id="responsesList"></div>
     </div>
 
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.5.0/firebase-analytics.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.5.0/firebase-database.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.5.0/firebase-storage.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            emailjs.init("0fGmuOYK5Kg3rkRQF");
-        })();
-    </script>
     <script type="module" src="script.js"></script>
 </body>
 </html> 
