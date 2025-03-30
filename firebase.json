@@ -1,0 +1,19 @@
+{
+  "database": {
+    "rules": {
+      "staff": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  },
+  "storage": {
+    "rules": {
+      "staff-photos": {
+        ".read": true,
+        ".write": true,
+        ".validate": "request.resource.size < 5 * 1024 * 1024 && request.resource.contentType.matches('image/.*')"
+      }
+    }
+  }
+} 
