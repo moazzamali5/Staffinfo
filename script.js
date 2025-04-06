@@ -518,13 +518,51 @@ loginBtn.addEventListener('click', () => {
 // Function to display responses with search
 function displayResponses(data) {
     responsesList.innerHTML = '';
+    const submissionsList = document.getElementById('submissionsList');
+    submissionsList.innerHTML = '';
     
     if (data) {
         const searchTerm = searchInput.value.toLowerCase();
-        Object.entries(data).forEach(([key, value]) => {
+        const entries = Object.entries(data);
+        
+        // Sort entries by submission date (most recent first)
+        entries.sort((a, b) => {
+            const dateA = new Date(a[1].submissionDate);
+            const dateB = new Date(b[1].submissionDate);
+            return dateB - dateA;
+        });
+
+        // Populate submissions sidebar
+        entries.forEach(([key, value]) => {
+            const submissionItem = document.createElement('div');
+            submissionItem.className = 'submission-item';
+            submissionItem.innerHTML = `${value.firstName} ${value.lastName}`;
+            submissionItem.dataset.key = key;
+            
+            // Add click event to scroll to the corresponding response card
+            submissionItem.addEventListener('click', () => {
+                const targetCard = document.querySelector(`[data-key="${key}"]`);
+                if (targetCard) {
+                    // Remove active class from all items
+                    document.querySelectorAll('.submission-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    // Add active class to clicked item
+                    submissionItem.classList.add('active');
+                    // Scroll to the card
+                    targetCard.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+            
+            submissionsList.appendChild(submissionItem);
+        });
+
+        // Display response cards
+        entries.forEach(([key, value]) => {
             if (value.firstName.toLowerCase().includes(searchTerm)) {
                 const responseCard = document.createElement('div');
                 responseCard.className = 'response-card';
+                responseCard.dataset.key = key;
                 
                 let siblingsHtml = '';
                 if (value.siblings && value.siblings.length > 0) {
